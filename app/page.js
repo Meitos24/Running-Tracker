@@ -1,95 +1,165 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+
+import "bootstrap/dist/css/bootstrap.min.css"
+import { useState } from "react"
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  // const [contKm, setCountKm] = useState(0);
+
+  // function addKm() {
+  //   setCountKm(contKm + 1);
+  // }
+
+  // OBJETO RUNS
+  const runs = [
+    {
+      id: "1",
+      distance: 5,
+      location: "Parque del Arte",
+      duration: "00:25:30",
+      pace: "5:10"
+    },
+    {
+      id: "2",
+      distance: 10,
+      location: "Parque del Arte",
+      duration: "00:49:05",
+      pace: "5:00"
+
+    }
+  ]
+    
+  
+
+  return (
+    <div className="min-vh-100" style={{ background: "linear-gradient(135deg, #e8f5e8 0%, #e3f2fd 100%)" }}>
+      <div className="container py-4">
+        {/* HEADER */}
+        <div>
+          <h1 className="display-4 fw-bold text-dark mb-2">🏃‍♂️ Registro de Runnning</h1>
+          <p className="text-muted">Lleva el control de todas tus carreras y entrenamientos</p>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Stats */}
+        <div className="row g-4 mb-4">
+          <div className="col-md-3">
+            <div className="card h-100">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <small className="text-muted">Total Carreras</small>
+                  <h3 className="mb-0">Total Carreras</h3>
+                </div>
+                <div className="fs-1 text-primary">🏃</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="card h-100">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <small className="text-muted">Distancia Total</small>
+                  <h3 className="mb-0">Distancia Total km</h3>
+                </div>
+                <div className="fs-1 text-success">📍</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="card h-100">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <small className="text-muted">Promedio</small>
+                  <h3 className="mb-0">Promedio km</h3>
+                </div>
+                <div className="fs-1 text-warning">⚡</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="card h-100">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <small className="text-muted">Esta Semana</small>
+                  <h3 className="mb-0">Esta Semana</h3>
+                </div>
+                <div className="fs-1 text-info">🏆</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* BUTTON */}
+        <div className="mb-4">
+          <button
+            type="button"
+            className="btn btn-success"
+          >
+            <span className="me-2">+</span>
+            Registrar Carrera
+            </button>
+        </div>
+
+        {/* RUNS GRID */}
+        <div className="row g-4">
+          {runs.map((run) => (
+            <div key={run.id} className="col-lg-4 col-md-6">
+              <div className="card h-100 shadow-sm">
+                <div className="card-header d-flex justify-content-between align-items-start">
+                  <div className="flex-grow-1">
+                    <h5 className="card-title mb-1 d-flex align-items-center gap-2">
+                      {run.distance} km
+                      <span></span>
+                    </h5>
+                    <small></small>
+                  </div>
+                  <div className="d-flex gap-1">
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="text-muted">🕐</span>
+                        <span className="fw-medium">{run.duration}</span>
+                      </div>
+                      <div>{run.pace} /km</div>
+                    </div>
+
+                    <div className="d-flex align-items-center gap-2 mb-2">
+                      <span className="text-muted">📍</span>
+                      <small className="text-muted">{run.location}</small>
+                    </div>
+
+                    <div className="d-flex align-items-center gap-2 mb-2">
+                      <span>Tipo de entrenamiento (intervalo, longrun)</span>
+                      <div>(Estrellas dificultad entrenamiento)</div>
+                    </div>
+
+                    {/* Implementar sistema de calorías */}
+                    {/* Implementar notas del entrenamiento */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+      </div>
     </div>
-  );
+    /* <div>
+      <p>Me presionaste {contador} veces</p>
+      <button onClick={addCount}>+</button>
+    </div> */
+  )
 }
