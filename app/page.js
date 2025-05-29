@@ -4,24 +4,43 @@ import "bootstrap/dist/css/bootstrap.min.css"
 
 import { useState, useEffect } from "react"
 
+//*!<-----------------------OBJETO INITIALRUNS (PRINCIPALES)----------------------->
+const initialRuns = [
+  // {
+  //   id: "1",
+  //   distance: 5,
+  //   location: "Parque del Arte",
+  //   duration: "00:25:30",
+  //   pace: "5:10"
+  // },
+  // {
+  //   id: "2",
+  //   distance: 10,
+  //   location: "Parque del Arte",
+  //   duration: "00:49:05",
+  //   pace: "5:00"
+  // }
+]
+
 export default function Home() {
 
-  
- 
+  //*! All useState
+  const [runs, setRuns] = useState(initialRuns); //objeto initialRuns = runs(predeterminado)
+  const [editarRuns, setEditarRuns] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
+  const [formData, setFormData] = useState({ // inputs al editar/crear
+    // date: "",
+    distance: "",
+    // duration: "",
+    location: ""
+  });
+
 
   useEffect(() => {
     // Importar dinámicamente Bootstrap JS (solo del lado del cliente)
     import("bootstrap/dist/js/bootstrap.bundle.min.js");
   }, []);
 
-  // const [contKm, setCountKm] = useState(0);
-
-  // function addKm() {
-  //   setCountKm(contKm + 1);
-  // }
-
-  //*!<-----------------------MODO OSCURO----------------------->
-  const [darkMode, setDarkMode] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
 
   // Cargar desde localStorage al iniciar
@@ -55,25 +74,51 @@ export default function Home() {
     ? { background: "linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%)" }
     : { background: "linear-gradient(135deg, #e8f5e8 0%, #e3f2fd 100%)" }
 
+  //*! Función para agregarRuns
+  const addRuns = () => {
+    const distance = Number.parseFloat(formData.distance);
 
-  // OBJETO RUNS
-  const runs = [
-    {
-      id: "1",
-      distance: 5,
-      location: "Parque del Arte",
-      duration: "00:25:30",
-      pace: "5:10"
-    },
-    {
-      id: "2",
-      distance: 10,
-      location: "Parque del Arte",
-      duration: "00:49:05",
-      pace: "5:00"
+    const newRun = {
+      id: Date.now().toString(),
+      distance,
+      location: formData.location
     }
-  ]
-    
+    setRuns([newRun, ...runs])
+  }
+
+  //*! Función para no cargar de nuevo la info de los inputs
+  const keepModalData = (run) => {
+    setEditarRuns(run)
+    setFormData({
+      distance: run.distance,
+      location: run.location
+    })
+  };
+
+  //*! Función para actualizarRuns
+  const handleUpdate = () => {
+    if (!editarRuns) return //si sí se están modificando
+
+    const distance = Number.parseFloat(formData.distance)
+
+    const updateRuns = runs.map((run) =>
+      run.id === editarRuns.id
+        ? {
+          ...run,
+          distance: formData.distance,
+          location: formData.location,
+        }
+        : run,
+    )
+    setRuns(updateRuns)
+    setEditarRuns(null) //ya no se está actualizando
+  }
+
+  //*! Función para borrar runs
+  const handleDelete = (id) => {
+    setRuns(runs.filter(run => run.id !== id))
+  }
+  
   return (
     <div className="min-vh-100" style={backgroundStyle}>
       <div className="container py-4">
@@ -81,7 +126,7 @@ export default function Home() {
         <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
             <h1 className="display-4 fw-bold mb-2">🏃‍♂️ Registro de Runnning</h1>
-            <p className="text-muted">Lleva el control de todas tus carreras y entrenamientos</p>
+            <p className="text-muted">{formData.date}</p>
           </div>
           <div className="d-flex align-items-center gap-3">
             <span className="text-muted">{darkMode ? "🌙" : "☀️"}</span>
@@ -180,6 +225,7 @@ export default function Home() {
                       className="btn btn-sm btn-outline-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#editModal"
+                      onClick={() => keepModalData(run)}
                     >
                       ✏️
                     </button>
@@ -225,7 +271,7 @@ export default function Home() {
         {runs.length === 0 && (
           <div className="text-center py-5">
             <div className="display-1 text-muted mb-3">🏃</div>
-            <h3 className="text-dark mb-2">No hay carreras registradas</h3>
+            <h3 className="fw-bold mb-2">No hay carreras registradas</h3>
             <p className="text-muted mb-4">Comienza registrando tu primera carrera o entrenamiento</p>
             <button
               type="button"
@@ -251,13 +297,15 @@ export default function Home() {
             <div className="modal-body">
               <form>
                 <div className="row g-3">
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Fecha</label>
                     <input 
                       type="date"
                       className="form-control"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     />
-                  </div>
+                  </div> */}
                   <div className="col-md-6">
                     <label className="form-label">Distancia (km)</label>
                     <input 
@@ -265,33 +313,37 @@ export default function Home() {
                       step="0.1"
                       className="form-control"
                       placeholder="5.2"
+                      value={formData.distance}
+                      onChange={(e) => setFormData({...formData, distance: e.target.value})}
                     />
                   </div>
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Tiempo (HH:MM:SS)</label>
                     <input
                       type="text"
                       className="form-control"
                       placeholder="00:26:30"
                     />
-                  </div>
-                  <div className="col-md-6">
+                  </div> */}
+                  {/* <div className="col-md-6">
                     <label className="form-label">Calorías (opcional)</label>
                     <input
                       type="number"
                       className="form-control"
                       placeholder="350"
                     />
-                  </div>
+                  </div> */}
                   <div className="col-12">
                     <label className="form-label">Ubicación</label>
                     <input
                       type="text"
                       className="form-control"
                       placeholder="Parque del Arte, Escaleras..."
+                      value={formData.location}
+                      onChange={e => setFormData({...formData, location: e.target.value})}
                     />
                   </div>
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Tipo de Carrera</label>
                     <select
                       className="form-select"
@@ -302,8 +354,8 @@ export default function Home() {
                       <option value="intervalos">Intervalos</option>
                       <option value="recuperacion">Recuperación</option>
                     </select>
-                  </div>
-                  <div className="col-md-6">
+                  </div> */}
+                  {/* <div className="col-md-6">
                     <label className="form-label">Clima</label>
                     <select
                       className="form-select"
@@ -315,8 +367,8 @@ export default function Home() {
                       <option value="calor">🔥 Calor</option>
                       <option value="frio">❄️ Frío</option>
                     </select>
-                  </div>
-                  <div className="col-12">
+                  </div> */}
+                  {/* <div className="col-12">
                     <label className="form-label">Dificultad (1-5)</label>
                     <select
                       className="form-select"
@@ -327,15 +379,15 @@ export default function Home() {
                       <option value="4">⭐⭐⭐⭐ Difícil</option>
                       <option value="5">⭐⭐⭐⭐⭐ Muy Difícil</option>
                     </select>
-                  </div>
-                  <div className="col-12">
+                  </div> */}
+                  {/* <div className="col-12">
                     <label className="form-label">Notas</label>
                     <textarea
                       className="form-control"
                       rows={3}
                       placeholder="¿Cómo te sentiste? ¿Alguna observación especial?"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </form>
             </div>
@@ -343,8 +395,8 @@ export default function Home() {
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                 Cancelar
               </button>
-              <button type="button" className="btn btn-primary">
-                Actualizar
+              <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={addRuns}>
+                Registrar
               </button>
             </div>
           </div>
@@ -362,43 +414,47 @@ export default function Home() {
             <div className="modal-body">
               <form>
                 <div className="row g-3">
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Fecha</label>
                     <input
                       type="date"
                       className="form-control"
                     />
-                  </div>
+                  </div> */}
                   <div className="col-md-6">
                     <label className="form-label">Distancia (km)</label>
                     <input
                       type="number"
                       step="0.1"
                       className="form-control"
+                      value={formData.distance}
+                      onChange={e => setFormData({ ...formData, distance: e.target.value })}
                     />
                   </div>
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Tiempo (HH:MM:SS)</label>
                     <input
                       type="text"
                       className="form-control"
                     />
-                  </div>
-                  <div className="col-md-6">
+                  </div> */}
+                  {/* <div className="col-md-6">
                     <label className="form-label">Calorías</label>
                     <input
                       type="number"
                       className="form-control"
                     />
-                  </div>
+                  </div> */}
                   <div className="col-12">
                     <label className="form-label">Ubicación</label>
                     <input
                       type="text"
                       className="form-control"
+                      value={formData.location}
+                      onChange={e => setFormData({...formData, location: e.target.value})}
                     />
                   </div>
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <label className="form-label">Tipo</label>
                     <select
                       className="form-select"
@@ -440,7 +496,7 @@ export default function Home() {
                     <textarea
                       className="form-control"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </form>
             </div>
@@ -448,7 +504,7 @@ export default function Home() {
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                 Cancelar
               </button>
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleUpdate}>
                 Actualizar
               </button>
             </div>
@@ -475,6 +531,7 @@ export default function Home() {
                 type="button"
                 className="btn btn-danger"
                 data-bs-dismiss="modal"
+                onClick={() => editarRuns && handleDelete(editarRuns.id)}
               >
                 Eliminar
               </button>
